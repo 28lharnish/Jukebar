@@ -23,6 +23,16 @@
                     </div>
                     <p>Enable Jukepix</p>
                 </div>
+                <div>
+                    <div class="toggle-switch" onclick="document.getElementById('lyricsToggleCheckbox').click()">
+                        <div class="switch-track">
+                            <div class="switch-thumb"></div>
+                        </div>
+                        <input type="checkbox" id="lyricsToggleCheckbox" autocomplete="off" 
+                            style="display: none;">
+                    </div>
+                    <p>Enable Lyrics</p>
+                </div>
                 <p class="user-greeting">Logged in as: <strong>
                         <%= user %>
                     </strong></p>
@@ -101,6 +111,25 @@
         } catch (err) {
             console.error('Error updating Jukepix setting:', err);
             alert('Network error updating Jukepix setting');
+            e.target.checked = !e.target.checked; // revert checkbox
+        }
+    });
+
+    document.getElementById('lyricsToggleCheckbox').addEventListener('change', async (e) => {
+        try {
+            const res = await fetch('/toggleLyrics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled: e.target.checked })
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                alert(data.error || 'Failed to update Lyrics setting');
+                e.target.checked = !e.target.checked; // revert checkbox
+            }
+        } catch (err) {
+            console.error('Error updating Lyrics setting:', err);
+            alert('Network error updating Lyrics setting');
             e.target.checked = !e.target.checked; // revert checkbox
         }
     });
@@ -288,6 +317,21 @@
     document.addEventListener('DOMContentLoaded', () => {
         fetchUsers();
         fetchQueueHistory(true);
+        
+        // Load Jukepix and Lyrics status
+        fetch('/jukepixStatus')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('jukepixToggleCheckbox').checked = data.enabled;
+            })
+            .catch(err => console.error('Error loading Jukepix status:', err));
+        
+        fetch('/lyricsStatus')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('lyricsToggleCheckbox').checked = data.enabled;
+            })
+            .catch(err => console.error('Error loading Lyrics status:', err));
     });
     function handleSearchSubmit(event) {
         event.preventDefault();

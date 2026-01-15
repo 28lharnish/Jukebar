@@ -5,6 +5,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.2",
+    "node-vibrant": "^4.0.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "spotify-web-api-node": "^5.0.2",
